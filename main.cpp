@@ -35,8 +35,8 @@ void testGraphClass()
 
         // testing edges manipulations
 
-        const double testWeightAB = 1.0;
-        const double testWeightBA = 2.0;
+        const int testWeightAB = 1;
+        const int testWeightBA = 2;
 
         graph.addEdge("A", "B", testWeightAB);
         graph.addEdge("B", "A", testWeightBA);

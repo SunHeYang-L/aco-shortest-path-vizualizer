@@ -12,6 +12,12 @@ class GraphExcept: public runtime_error
                 GraphExcept(const string& msg): runtime_error(msg) {};
 };
 
+class EdgeNotExist: public runtime_error
+{
+        public:
+                EdgeNotExist(const string& msg): runtime_error(msg) {};
+};
+
 /*
  * graph is represented as an adjacency matrix
  * the matrix is represented as the map 
@@ -142,7 +148,7 @@ void Graph::removeEdge(const string v1, const string v2)
 
 	if (!edgeExist(v1, v2))
 	{
-		throw GraphExcept("The edge does not exist");
+		throw EdgeNotExist("The edge does not exist");
 	}
 
 	adjMatrix[v1].erase(v2);
@@ -170,7 +176,7 @@ int Graph::getWeight(const string v1, const string v2)
 {
 	if (!edgeExist(v1, v2))
 	{
-		throw GraphExcept("The edge does not exist");
+		throw EdgeNotExist("The edge does not exist");
 	}
 	
 	return adjMatrix[v1][v2];
@@ -182,7 +188,7 @@ void Graph::setWeight(const string v1, const string v2, const int weight)
 	
 	if (!edgeExist(v1, v2))
 	{
-		throw GraphExcept("The edge does not exist");
+		throw EdgeNotExist("The edge does not exist");
 	}
 	
 	adjMatrix[v1][v2] = weight;
@@ -192,7 +198,7 @@ int Graph::getPheromone(const string v1, const string v2)
 {
 	if (!edgeExist(v1, v2))
 	{
-		throw GraphExcept("The edge does not exist");
+		throw EdgeNotExist("The edge does not exist");
 	}
 	
 	return pheromoneMatrix[v1][v2];
@@ -204,7 +210,7 @@ void Graph::setPheromone(const string v1, const string v2, const int pheromone)
 	
 	if (!edgeExist(v1, v2))
 	{
-		throw GraphExcept("The edge does not exist");
+		throw EdgeNotExist("The edge does not exist");
 	}
 	
 	pheromoneMatrix[v1][v2] = pheromone;

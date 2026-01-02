@@ -92,7 +92,7 @@ void testGraphClass()
         {
                 graph.getPheromone("A", "D");
         }
-        catch (GraphExcept)
+        catch (EdgeNotExist)
         {
                 cout << "TEST PASSED: Exception thrown when getting pheromone on non-existent edge" << endl;
         }
@@ -102,7 +102,7 @@ void testGraphClass()
         {
                 graph.setPheromone("A", "D", 10);
         }
-        catch (GraphExcept)
+        catch (EdgeNotExist)
         {
                 cout << "TEST PASSED: Exception thrown when setting pheromone on non-existent edge" << endl;
         }

@@ -70,6 +70,7 @@ void Graph::addVertex(const string name)
 		throw GraphExcept("The vertex already exists!");
 	}
 	
+	adjMatrix[name][name] = 0;
 }
 
 void Graph::removeVertex(const string name)

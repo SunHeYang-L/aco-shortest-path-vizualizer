@@ -70,19 +70,6 @@ void Graph::addVertex(const string name)
 		throw GraphExcept("The vertex already exists!");
 	}
 	
-	adjMatrix[name][name] = 0;
-
-	if(adjMatrix.size() != 1)
-	{
-		for(r_iter row = adjMatrix.begin(); row != adjMatrix.end(); ++row)
-		{
-			if (row->first != name)
-			{
-				row->second[name] = INF;
-				adjMatrix[name][row->first] = INF;
-			}
-		}
-	}
 }
 
 void Graph::removeVertex(const string name)
@@ -116,7 +103,7 @@ void Graph::addEdge(const string v1, const string v2, const int weight)
                 throw GraphExcept("You can't add an edge between the same vertex");
         }
 
-	if(adjMatrix[v1][v2] != INF || adjMatrix[v2][v1] != INF)
+	if(edgeExist(v1, v2) || edgeExist(v2, v1))
 	{
 		throw GraphExcept("The edge already exists");
 	}
@@ -132,7 +119,7 @@ void Graph::removeEdge(const string v1, const string v2)
                 throw GraphExcept("You can't remove an edge between the same vertex");
         }
 
-	if (adjMatrix[v1][v2] == INF)
+	if (!edgeExist(v1, v2))
 	{
 		throw GraphExcept("The edge does not exist");
 	}
@@ -145,16 +132,45 @@ bool Graph::edgeExist(const string v1, const string v2)
 {
 	if (v1 == v2) return false;
 	
-	return adjMatrix[v1][v2] != INF;
+	// Check if v1 exists in the adjacency matrix
+	r_iter row = adjMatrix.find(v1);
+	if (row == adjMatrix.end()) return false;
+	
+	// Check if v2 exists in v1's row
+	c_iter col = row->second.find(v2);
+	if (col == row->second.end()) return false;
+	
+	// Check if the edge exists (not INF)
+	return col->second != INF;
 }
 
 int Graph::getWeight(const string v1, const string v2)
 {
-	return adjMatrix[v1][v2];
+	if (!edgeExist(v1, v2))
+	{
+		throw GraphExcept("The edge does not exist");
+	}
+	
+	r_iter row = adjMatrix.find(v1);
+	c_iter col = row->second.find(v2);
+	return col->second;
 }
 
 void Graph::setWeight(const string v1, const string v2, const int weight)
 {
 	if (v1 == v2) throw GraphExcept("The vertex can't have an edge with itself");
-	adjMatrix[v1][v2] = weight;
+	
+	r_iter row = adjMatrix.find(v1);
+	if (row == adjMatrix.end())
+	{
+		throw GraphExcept("The edge does not exist");
+	}
+	
+	c_iter col = row->second.find(v2);
+	if (col == row->second.end() || col->second == INF)
+	{
+		throw GraphExcept("The edge does not exist");
+	}
+	
+	col->second = weight;
 }

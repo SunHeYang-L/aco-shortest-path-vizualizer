@@ -116,7 +116,7 @@ void Graph::addEdge(const string v1, const string v2, const int weight)
                 throw GraphExcept("You can't add an edge between the same vertex");
         }
 
-	if(adjMatrix[v1][v2] != INF)
+	if(adjMatrix[v1][v2] != INF || adjMatrix[v2][v1] != INF)
 	{
 		throw GraphExcept("The edge already exists");
 	}

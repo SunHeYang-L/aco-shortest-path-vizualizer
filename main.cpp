@@ -36,20 +36,17 @@ void testGraphClass()
         // testing edges manipulations
 
         const int testWeightAB = 1;
-        const int testWeightBA = 2;
 
         graph.addEdge("A", "B", testWeightAB);
-        graph.addEdge("B", "A", testWeightBA);
 	
 	assert(graph.countVertices() == 2);
-        assert(graph.countEdges() == 2);
+        assert(graph.countEdges() == 1);
         assert(graph.edgeExist("A", "B"));
         assert(graph.getWeight("A", "B") == testWeightAB);
-        assert(graph.getWeight("B", "A") == testWeightBA);
 
-        graph.removeEdge("B", "A");
-        assert(graph.edgeExist("B", "A") == false);
-        assert(graph.countEdges() == 1);
+        graph.removeEdge("A", "B");
+        assert(graph.edgeExist("A", "B") == false);
+        assert(graph.countEdges() == 0);
 
         graph.removeVertex("B");
 
@@ -62,6 +59,20 @@ void testGraphClass()
         catch (GraphExcept)
         {
                 cout << "TEST PASSED: Can't remove the same vertex twice" << endl;
+        }
+
+        // test non-directed graph: can't add edge if it already exists in opposite direction
+        graph.addVertex("B");
+        graph.addVertex("C");
+        graph.addEdge("B", "C", 5);
+        
+        try
+        {
+                graph.addEdge("C", "B", 10);
+        }
+        catch (GraphExcept)
+        {
+                cout << "TEST PASSED: Can't add edge if it already exists between the same vertices (non-directed graph)" << endl;
         }
 
 }

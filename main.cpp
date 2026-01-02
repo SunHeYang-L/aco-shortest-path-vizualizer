@@ -75,6 +75,38 @@ void testGraphClass()
                 cout << "TEST PASSED: Can't add edge if it already exists between the same vertices (non-directed graph)" << endl;
         }
 
+        // testing pheromone matrix
+        graph.addVertex("D");
+        graph.addEdge("B", "D", 3);
+        
+        // Test that pheromone is initialized to 0 when edge is added
+        assert(graph.getPheromone("B", "D") == 0);
+        
+        // Test that setter sets a value and it can be retrieved by getter
+        const int testPheromone = 42;
+        graph.setPheromone("B", "D", testPheromone);
+        assert(graph.getPheromone("B", "D") == testPheromone);
+        
+        // Test that exception is thrown when trying to get pheromone on non-existent edge
+        try
+        {
+                graph.getPheromone("A", "D");
+        }
+        catch (GraphExcept)
+        {
+                cout << "TEST PASSED: Exception thrown when getting pheromone on non-existent edge" << endl;
+        }
+        
+        // Test that exception is thrown when trying to set pheromone on non-existent edge
+        try
+        {
+                graph.setPheromone("A", "D", 10);
+        }
+        catch (GraphExcept)
+        {
+                cout << "TEST PASSED: Exception thrown when setting pheromone on non-existent edge" << endl;
+        }
+
 }
 
 // this function fills a graph adjacency matrix from a file

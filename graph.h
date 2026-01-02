@@ -49,7 +49,6 @@ class Graph
 
 		void print() const;
 	private:
-		constexpr static const int INF = numeric_limits<int>::max();
 		int edges;
 		AdjMatrix adjMatrix;
 		PheromoneMatrix pheromoneMatrix;
@@ -146,7 +145,7 @@ void Graph::removeEdge(const string v1, const string v2)
 		throw GraphExcept("The edge does not exist");
 	}
 
-	adjMatrix[v1][v2] = INF;
+	adjMatrix[v1].erase(v2);
 	pheromoneMatrix[v1].erase(v2);
 	edges--;
 }
@@ -163,8 +162,8 @@ bool Graph::edgeExist(const string v1, const string v2)
 	c_iter col = row->second.find(v2);
 	if (col == row->second.end()) return false;
 	
-	// Check if the edge exists (not INF)
-	return col->second != INF;
+	// Entry exists, so edge exists (self-loops are already filtered out by v1 == v2 check)
+	return true;
 }
 
 int Graph::getWeight(const string v1, const string v2)
@@ -174,28 +173,19 @@ int Graph::getWeight(const string v1, const string v2)
 		throw GraphExcept("The edge does not exist");
 	}
 	
-	r_iter row = adjMatrix.find(v1);
-	c_iter col = row->second.find(v2);
-	return col->second;
+	return adjMatrix[v1][v2];
 }
 
 void Graph::setWeight(const string v1, const string v2, const int weight)
 {
 	if (v1 == v2) throw GraphExcept("The vertex can't have an edge with itself");
 	
-	r_iter row = adjMatrix.find(v1);
-	if (row == adjMatrix.end())
+	if (!edgeExist(v1, v2))
 	{
 		throw GraphExcept("The edge does not exist");
 	}
 	
-	c_iter col = row->second.find(v2);
-	if (col == row->second.end() || col->second == INF)
-	{
-		throw GraphExcept("The edge does not exist");
-	}
-	
-	col->second = weight;
+	adjMatrix[v1][v2] = weight;
 }
 
 int Graph::getPheromone(const string v1, const string v2)
@@ -205,19 +195,7 @@ int Graph::getPheromone(const string v1, const string v2)
 		throw GraphExcept("The edge does not exist");
 	}
 	
-	p_r_iter row = pheromoneMatrix.find(v1);
-	if (row == pheromoneMatrix.end())
-	{
-		return 0; // Edge exists but pheromone not initialized, return 0
-	}
-	
-	p_c_iter col = row->second.find(v2);
-	if (col == row->second.end())
-	{
-		return 0; // Edge exists but pheromone not initialized, return 0
-	}
-	
-	return col->second;
+	return pheromoneMatrix[v1][v2];
 }
 
 void Graph::setPheromone(const string v1, const string v2, const int pheromone)

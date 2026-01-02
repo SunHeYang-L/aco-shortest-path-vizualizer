@@ -1,6 +1,7 @@
 #include <string>
 #include <stdexcept>
 #include <map>
+#include <vector>
 #include <iostream>
 #include <limits>
 
@@ -52,6 +53,7 @@ class Graph
 
 		int countVertices() const;
 		int countEdges() const;
+		vector<string> getVertices() const;
 
 		void print() const;
 	private:
@@ -115,6 +117,16 @@ void Graph::removeVertex(const string name)
 int Graph::countVertices() const
 {
 	return adjMatrix.size();
+}
+
+vector<string> Graph::getVertices() const
+{
+	vector<string> vertices;
+	for (const auto& row : adjMatrix)
+	{
+		vertices.push_back(row.first);
+	}
+	return vertices;
 }
 
 int Graph::countEdges() const

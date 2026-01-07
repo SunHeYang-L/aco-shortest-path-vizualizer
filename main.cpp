@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "ACOService.h"
 #include <cassert>
 #include <fstream>
 #include <sstream>
@@ -75,22 +76,41 @@ void testGraphClass()
                 cout << "TEST PASSED: Can't add edge if it already exists between the same vertices (non-directed graph)" << endl;
         }
 
-        // testing pheromone matrix
+        // testing pheromone matrix using ACOService
         graph.addVertex("D");
         graph.addEdge("B", "D", 3);
         
+        // Create ACOService from the graph's adjacency matrix
+        map<string, map<string, int>> adjacencyMatrix;
+        vector<string> vertices = graph.getVertices();
+        for (const string& v1 : vertices)
+        {
+                for (const string& v2 : vertices)
+                {
+                        if (graph.edgeExist(v1, v2))
+                        {
+                                adjacencyMatrix[v1][v2] = graph.getWeight(v1, v2);
+                        }
+                        else if (v1 == v2)
+                        {
+                                adjacencyMatrix[v1][v2] = 0;
+                        }
+                }
+        }
+        ACOService acoService(adjacencyMatrix);
+        
         // Test that pheromone is initialized to 0 when edge is added
-        assert(graph.getPheromone("B", "D") == 0);
+        assert(acoService.getPheromone("B", "D") == 0);
         
         // Test that setter sets a value and it can be retrieved by getter
         const int testPheromone = 42;
-        graph.setPheromone("B", "D", testPheromone);
-        assert(graph.getPheromone("B", "D") == testPheromone);
+        acoService.setPheromone("B", "D", testPheromone);
+        assert(acoService.getPheromone("B", "D") == testPheromone);
         
         // Test that exception is thrown when trying to get pheromone on non-existent edge
         try
         {
-                graph.getPheromone("A", "D");
+                acoService.getPheromone("A", "D");
         }
         catch (EdgeNotExist)
         {
@@ -100,7 +120,7 @@ void testGraphClass()
         // Test that exception is thrown when trying to set pheromone on non-existent edge
         try
         {
-                graph.setPheromone("A", "D", 10);
+                acoService.setPheromone("A", "D", 10);
         }
         catch (EdgeNotExist)
         {

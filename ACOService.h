@@ -1,3 +1,6 @@
+#ifndef ACOSERVICE_H
+#define ACOSERVICE_H
+
 #include "graph.h"
 #include <vector>
 #include <map>
@@ -12,10 +15,15 @@ class ACOService
 		ACOService(const map<string, map<string, int>>& adjacencyMatrix);
 		~ACOService();
 
+		typedef map<string, map<string, int>> PheromoneMatrix;
+		typedef PheromoneMatrix::iterator p_r_iter; // iterator for pheromone matrix rows
+		typedef map<string, int>::iterator p_c_iter; // iterator for pheromone matrix columns
+
 		// Getters
 		vector<string> getVertices() const;
 		int getWeight(const string v1, const string v2);
 		int getPheromone(const string v1, const string v2);
+		void setPheromone(const string v1, const string v2, const int pheromone);
 		
 		// ACO methods
 		void iterate();
@@ -25,6 +33,7 @@ class ACOService
 
 	private:
 		Graph graph;
+		PheromoneMatrix pheromoneMatrix;
 		int iterationsMade;
 };
 
@@ -67,6 +76,8 @@ ACOService::ACOService(const map<string, map<string, int>>& adjacencyMatrix)
 			if (!graph.edgeExist(v1, v2) && !graph.edgeExist(v2, v1))
 			{
 				graph.addEdge(v1, v2, weight);
+				// Initialize pheromone for this edge
+				pheromoneMatrix[v1][v2] = 0;
 			}
 		}
 	}
@@ -74,6 +85,11 @@ ACOService::ACOService(const map<string, map<string, int>>& adjacencyMatrix)
 
 ACOService::~ACOService()
 {
+	for (p_r_iter row = pheromoneMatrix.begin(); row != pheromoneMatrix.end(); ++row)
+	{
+		row->second.clear();
+	}
+	pheromoneMatrix.clear();
 }
 
 vector<string> ACOService::getVertices() const
@@ -88,7 +104,24 @@ int ACOService::getWeight(const string v1, const string v2)
 
 int ACOService::getPheromone(const string v1, const string v2)
 {
-	return graph.getPheromone(v1, v2);
+	if (!graph.edgeExist(v1, v2))
+	{
+		throw EdgeNotExist("The edge does not exist");
+	}
+	
+	return pheromoneMatrix[v1][v2];
+}
+
+void ACOService::setPheromone(const string v1, const string v2, const int pheromone)
+{
+	if (v1 == v2) throw GraphExcept("The vertex can't have pheromone with itself");
+	
+	if (!graph.edgeExist(v1, v2))
+	{
+		throw EdgeNotExist("The edge does not exist");
+	}
+	
+	pheromoneMatrix[v1][v2] = pheromone;
 }
 
 void ACOService::iterate()
@@ -102,3 +135,5 @@ int ACOService::getIterationsMade() const
 {
 	return iterationsMade;
 }
+
+#endif // ACOSERVICE_H

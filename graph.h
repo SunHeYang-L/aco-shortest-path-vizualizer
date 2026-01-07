@@ -1,3 +1,6 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <string>
 #include <stdexcept>
 #include <map>
@@ -36,10 +39,6 @@ class Graph
 	typedef AdjMatrix::iterator r_iter; // iterator for adjacency matrix rows
 	typedef map<string, int>::iterator c_iter; // iterator for adjacency matrix columns
 
-	typedef map<string, map<string, int>> PheromoneMatrix;
-	typedef PheromoneMatrix::iterator p_r_iter; // iterator for pheromone matrix rows
-	typedef map<string, int>::iterator p_c_iter; // iterator for pheromone matrix columns
-
 		void addVertex(const string name);
 		void removeVertex(const string name);
 
@@ -48,8 +47,6 @@ class Graph
 	bool edgeExist(const string v1, const string v2);
 	int getWeight(const string v1, const string v2);
 	void setWeight(const string v1, const string v2, const int weight);
-	int getPheromone(const string v1, const string v2);
-	void setPheromone(const string v1, const string v2, const int pheromone);
 
 		int countVertices() const;
 		int countEdges() const;
@@ -59,7 +56,6 @@ class Graph
 	private:
 		int edges;
 		AdjMatrix adjMatrix;
-		PheromoneMatrix pheromoneMatrix;
 };
 
 Graph::Graph()
@@ -74,12 +70,6 @@ Graph::~Graph()
 		row->second.clear();
 	}
 	adjMatrix.clear();
-	
-	for (p_r_iter row = pheromoneMatrix.begin(); row != pheromoneMatrix.end(); ++row)
-	{
-		row->second.clear();
-	}
-	pheromoneMatrix.clear();
 }
 
 
@@ -105,13 +95,6 @@ void Graph::removeVertex(const string name)
 		it->second.erase(name);
 	}
 	adjMatrix.erase(name);
-	
-	// Remove from pheromone matrix
-	for (p_r_iter it = pheromoneMatrix.begin(); it != pheromoneMatrix.end(); ++it)
-	{
-		it->second.erase(name);
-	}
-	pheromoneMatrix.erase(name);
 }
 
 int Graph::countVertices() const
@@ -147,7 +130,6 @@ void Graph::addEdge(const string v1, const string v2, const int weight)
 	}
 
 	adjMatrix[v1][v2] = weight;
-	pheromoneMatrix[v1][v2] = 0;
 	edges++;
 }
 
@@ -164,7 +146,6 @@ void Graph::removeEdge(const string v1, const string v2)
 	}
 
 	adjMatrix[v1].erase(v2);
-	pheromoneMatrix[v1].erase(v2);
 	edges--;
 }
 
@@ -206,24 +187,5 @@ void Graph::setWeight(const string v1, const string v2, const int weight)
 	adjMatrix[v1][v2] = weight;
 }
 
-int Graph::getPheromone(const string v1, const string v2)
-{
-	if (!edgeExist(v1, v2))
-	{
-		throw EdgeNotExist("The edge does not exist");
-	}
-	
-	return pheromoneMatrix[v1][v2];
-}
+#endif // GRAPH_H
 
-void Graph::setPheromone(const string v1, const string v2, const int pheromone)
-{
-	if (v1 == v2) throw GraphExcept("The vertex can't have pheromone with itself");
-	
-	if (!edgeExist(v1, v2))
-	{
-		throw EdgeNotExist("The edge does not exist");
-	}
-	
-	pheromoneMatrix[v1][v2] = pheromone;
-}
